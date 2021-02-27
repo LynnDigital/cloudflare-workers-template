@@ -12,5 +12,8 @@
   "license": "MIT",
   "devDependencies": {
     "prettier": "^1.18.2"
+  },
+  "dependencies": {
+    "toucan-js": "^2.2.1"
   }
 }
