@@ -1,4 +1,5 @@
 import Toucan from "toucan-js"
+import { Router } from "tiny-request-router"
 
 addEventListener('fetch', event => {
 	const sentry = new Toucan({
@@ -19,11 +20,25 @@ addEventListener('fetch', event => {
 async function handleRequest(event, sentry) {
 	/** @param {Request} request */
 	const request = event.request
+	const router = new Router()
 	
 	try {
-		return new Response('Hello worker!', {
-			headers: { 'content-type': 'text/plain' },
+
+		router.get('*', async (params, request) => {
+			return new Response('Hello worker!', {
+				headers: { 'content-type': 'text/plain' },
+			})
 		})
+
+		const match = router.match(request.method, url.pathname)
+		if (match) {
+			response = match.handler(match.params, request)
+		}
+		else {
+			response = new Response('Endpoint Not Found', {
+				status: 404
+			})
+		}
 	}
 	catch(e) {
 		sentry.captureException(e)
