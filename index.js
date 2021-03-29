@@ -1,6 +1,19 @@
 import Toucan from "toucan-js"
 import { Router } from "tiny-request-router"
 
+const createResponse = (body, json = true, code = 200) => {
+	return new Response(json ? JSON.stringify(body) : body, {
+		status: code,
+		headers: {
+			'content-type': 'application/json',
+			"Access-Control-Allow-Origin": "*",
+			"Access-Control-Allow-Methods": "GET,POST,PUT,PATCH,POST,DELETE,OPTIONS",
+			"Access-Control-Max-Age": "86400",
+			// "Access-Control-Allow-Headers": "",
+		}
+	})
+}
+
 addEventListener('fetch', event => {
 	const sentry = new Toucan({
 		dsn: "...",
@@ -25,9 +38,15 @@ async function handleRequest(event, sentry) {
 	try {
 
 		router.get('*', async (params, request) => {
-			return new Response('Hello worker!', {
-				headers: { 'content-type': 'text/plain' },
-			})
+			return createResponse({message: 'Hello World'})
+		})
+
+		/**
+		 * Empty options required for pre-flight requests
+		 * CORS fails if this is not here
+		 */
+		router.options('*', async (params, request) => {
+			return createResponse('', false)
 		})
 
 		const match = router.match(request.method, url.pathname)
