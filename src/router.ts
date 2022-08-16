@@ -4,7 +4,10 @@ import { Router, Method } from 'tiny-request-router'
 import unknown from './routes/unknown'
 import options from './routes/options'
 
-export async function route(event: FetchEvent, request: Request): Promise<Response> {
+export async function route(
+  event: FetchEvent,
+  request: Request,
+): Promise<Response> {
   const router = new Router()
   const url = new URL(request.url)
 
@@ -16,14 +19,8 @@ export async function route(event: FetchEvent, request: Request): Promise<Respon
 
   const match = router.match(<Method>request.method, url.pathname)
   if (match) {
-    return match.handler({params: match.params, request, event})
+    return match.handler({ params: match.params, request, event })
   } else {
     return unknown()
   }
-}
-
-export interface RouteProps {
-  params: Params
-  request: Request,
-  event: FetchEvent
 }
